@@ -6,7 +6,8 @@ import { UploadController } from '../controllers/upload.controller';
 
 const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
 
-const multerOdm = require('multer-odm');
+// TODO: During npm install I am facing error due to this below line so, I make it commented for now.
+// const multerOdm = require('multer-odm');
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadDir),
