@@ -79,12 +79,53 @@
   background: #fed7d7;
   color: #822727;
   border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.field-hint {
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.auth-card input.error,
+.task-form input.error,
+.task-form textarea.error,
+.task-form select.error {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.auth-card input.error:focus,
+.task-form input.error:focus,
+.task-form textarea.error:focus,
+.task-form select.error:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .auth-card input {
   padding: 0.6rem 0.75rem;
   border: 1px solid #cbd5f5;
   border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .auth-card button {

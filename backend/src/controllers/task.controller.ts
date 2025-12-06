@@ -42,12 +42,28 @@ export class TaskController {
 
     try {
       if (!ownerId) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return res.status(401).json({ message: 'Unauthorized. Please log in to continue.' });
       }
 
       const owner = await this.userRepository.findOne({ where: { id: ownerId } });
       if (!owner) {
-        return res.status(404).json({ message: 'Owner not found' });
+        return res.status(404).json({ message: 'User account not found. Please contact support.' });
+      }
+
+      // Validate assignee IDs if provided
+      if (assigneeIds && assigneeIds.length > 0) {
+        const assignees = await this.userRepository.findBy({ id: In(assigneeIds) });
+        const foundIds = assignees.map((a) => a.id);
+        const invalidIds = assigneeIds.filter((id: string) => !foundIds.includes(id));
+
+        if (invalidIds.length > 0) {
+          return res.status(400).json({
+            message: 'Validation failed',
+            errors: {
+              assigneeIds: [`Invalid user IDs: ${invalidIds.join(', ')}. Please select valid users.`],
+            },
+          });
+        }
       }
 
       const assignees = assigneeIds.length
@@ -65,7 +81,10 @@ export class TaskController {
       const saved = await this.taskRepository.save(task);
       return res.status(201).json(saved);
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to create task' });
+      console.error('Task creation error:', error);
+      return res.status(500).json({
+        message: 'An unexpected error occurred while creating the task. Please try again later.',
+      });
     }
   };
 
@@ -75,12 +94,38 @@ export class TaskController {
 
     try {
       if (!taskId) {
-        return res.status(400).json({ message: 'Task id is required' });
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: {
+            id: ['Task ID is required'],
+          },
+        });
       }
 
       const task = await this.taskRepository.findOne({ where: { id: taskId } });
       if (!task) {
-        return res.status(404).json({ message: 'Task not found' });
+        return res.status(404).json({
+          message: 'Task not found',
+          errors: {
+            id: [`No task found with ID: ${taskId}. Please check the task ID and try again.`],
+          },
+        });
+      }
+
+      // Validate assignee IDs if provided
+      if (assigneeIds && assigneeIds.length > 0) {
+        const assignees = await this.userRepository.findBy({ id: In(assigneeIds) });
+        const foundIds = assignees.map((a) => a.id);
+        const invalidIds = assigneeIds.filter((id: string) => !foundIds.includes(id));
+
+        if (invalidIds.length > 0) {
+          return res.status(400).json({
+            message: 'Validation failed',
+            errors: {
+              assigneeIds: [`Invalid user IDs: ${invalidIds.join(', ')}. Please select valid users.`],
+            },
+          });
+        }
       }
 
       if (title !== undefined) task.title = title;
@@ -96,7 +141,10 @@ export class TaskController {
       const updated = await this.taskRepository.save(task);
       return res.json(updated);
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to update task' });
+      console.error('Task update error:', error);
+      return res.status(500).json({
+        message: 'An unexpected error occurred while updating the task. Please try again later.',
+      });
     }
   };
 
@@ -105,18 +153,31 @@ export class TaskController {
 
     try {
       if (!taskId) {
-        return res.status(400).json({ message: 'Task id is required' });
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: {
+            id: ['Task ID is required'],
+          },
+        });
       }
 
       const task = await this.taskRepository.findOne({ where: { id: taskId } });
       if (!task) {
-        return res.status(404).json({ message: 'Task not found' });
+        return res.status(404).json({
+          message: 'Task not found',
+          errors: {
+            id: [`No task found with ID: ${taskId}. Please check the task ID and try again.`],
+          },
+        });
       }
 
       await this.taskRepository.remove(task);
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to delete task' });
+      console.error('Task deletion error:', error);
+      return res.status(500).json({
+        message: 'An unexpected error occurred while deleting the task. Please try again later.',
+      });
     }
   };
 }

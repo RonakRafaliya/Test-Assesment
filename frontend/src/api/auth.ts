@@ -6,7 +6,8 @@ export const loginRequest = async (payload: LoginPayload): Promise<AuthResponse>
   return data;
 };
 
-export const registerRequest = async (payload: RegisterPayload): Promise<void> => {
-  await apiClient.post('/auth/register', payload);
+export const registerRequest = async (payload: RegisterPayload): Promise<AuthResponse> => {
+  const { data } = await apiClient.post<AuthResponse>('/auth/register', payload);
+  return data;
 };
 

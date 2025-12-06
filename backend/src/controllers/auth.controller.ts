@@ -14,7 +14,10 @@ export class AuthController {
     try {
       const existing = await this.userRepository.findOne({ where: { email } });
       if (existing) {
-        return res.status(400).json({ message: 'Email already registered' });
+        return res.status(400).json({
+          error: true,
+          message: 'This email is already registered. Please use a different email or try logging in.',
+        });
       }
 
       const roleEntities = await Promise.all(
@@ -40,7 +43,11 @@ export class AuthController {
 
       return res.status(201).json({ id: user.id, email: user.email });
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to register user' });
+      console.error('Registration error:', error);
+      return res.status(500).json({
+        error: true,
+        message: 'An unexpected error occurred during registration. Please try again later.',
+      });
     }
   };
 
@@ -50,12 +57,18 @@ export class AuthController {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
       if (!user) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+        return res.status(401).json({
+          error: true,
+          message: 'User not found. Please check your email and try again.',
+        });
       }
 
       const passwordMatch = await comparePassword(password, user.password);
       if (!passwordMatch) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+        return res.status(401).json({
+          error: true,
+          message: 'Invalid password. Please check your password and try again.',
+        });
       }
 
       const token = generateJwt(user);
@@ -71,7 +84,11 @@ export class AuthController {
         },
       });
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to login' });
+      console.error('Login error:', error);
+      return res.status(500).json({
+        error: true,
+        message: 'An unexpected error occurred during login. Please try again later.',
+      });
     }
   };
 }

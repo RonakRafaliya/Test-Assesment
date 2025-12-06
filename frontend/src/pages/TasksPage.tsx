@@ -41,8 +41,6 @@ export const TasksPage = () => {
     toggleRememberFilters,
   } = useTaskFilters();
 
-  console.log("toggleMyTasks", showMyTasks);
-
   const { data: tasksResponse, isLoading } = useQuery({
     queryKey: ['tasks', 'list'],
     queryFn: () => fetchTasks(1, 1000),
@@ -86,19 +84,35 @@ export const TasksPage = () => {
   const tasksToDisplay = tasksAfterFiltering.slice(startIndex, endIndex);
 
   const { createTask, updateTask, deleteTask } = useTaskMutations();
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
 
-  const handleCreateTask = (taskData: TaskInput) => {
-    createTask(taskData);
+  const handleCreateTask = async (taskData: TaskInput) => {
+    try {
+      await createTask(taskData);
+      setFormErrors({});
+    } catch (error) {
+      setFormErrors({ general: [error instanceof Error ? error.message : 'Failed to create task'] });
+    }
   };
 
-  const handleUpdateTask = (taskData: TaskInput) => {
+  const handleUpdateTask = async (taskData: TaskInput) => {
     if (!taskBeingEdited) return;
-    updateTask({ id: taskBeingEdited.id, payload: taskData });
-    setTaskBeingEdited(null);
+    try {
+      await updateTask({ id: taskBeingEdited.id, payload: taskData });
+      setFormErrors({});
+    } catch (error) {
+      setFormErrors({ general: [error instanceof Error ? error.message : 'Failed to update task'] });
+    }
   };
 
-  const handleDeleteTask = (task: Task) => {
-    deleteTask(task.id);
+  const handleDeleteTask = async (task: Task) => {
+    if (window.confirm(`Are you sure you want to delete "${task.title}"?`)) {
+      try {
+        await deleteTask(task.id);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : 'Failed to delete task');
+      }
+    }
   };
 
   const handleEditClick = (task: Task) => {
@@ -245,6 +259,9 @@ export const TasksPage = () => {
       {canUserManageTasks && (
         <section className="tasks-section">
           <h2>{taskBeingEdited ? 'Edit Task' : 'Create Task'}</h2>
+          {formErrors.general && formErrors.general.length > 0 && (
+            <div className="form-error">{formErrors.general[0]}</div>
+          )}
           <TaskForm
             initialValue={
               taskBeingEdited
@@ -259,6 +276,7 @@ export const TasksPage = () => {
             users={usersList}
             onSubmit={taskBeingEdited ? handleUpdateTask : handleCreateTask}
             submitLabel={taskBeingEdited ? 'Update Task' : 'Create Task'}
+            onError={setFormErrors}
           />
         </section>
       )}

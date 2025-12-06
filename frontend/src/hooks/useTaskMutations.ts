@@ -33,9 +33,18 @@ export const useTaskMutations = () => {
   });
 
   return {
-    createTask: createTaskMutation.mutate,
-    updateTask: updateTaskMutation.mutate,
-    deleteTask: deleteTaskMutation.mutate,
+    createTask: async (payload: TaskInput) => {
+      return createTaskMutation.mutateAsync(payload);
+    },
+    updateTask: async ({ id, payload }: { id: string; payload: TaskInput }) => {
+      return updateTaskMutation.mutateAsync({ id, payload });
+    },
+    deleteTask: async (id: string) => {
+      return deleteTaskMutation.mutateAsync(id);
+    },
+    isCreating: createTaskMutation.isPending,
+    isUpdating: updateTaskMutation.isPending,
+    isDeleting: deleteTaskMutation.isPending,
   };
 };
 

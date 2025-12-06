@@ -47,9 +47,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const getErrorMessage = (error: unknown) => {
     if (axios.isAxiosError(error)) {
-      return error.response?.data?.message ?? error.message;
+      // Check if it's a validation error with field-specific messages
+      const validationErrors = error.response?.data?.validationErrors;
+      if (validationErrors && typeof validationErrors === 'object') {
+        // Return the first error message from the first field
+        const firstField = Object.keys(validationErrors)[0];
+        if (firstField && Array.isArray(validationErrors[firstField]) && validationErrors[firstField].length > 0) {
+          return validationErrors[firstField][0];
+        }
+      }
+      return (
+        (axios.isAxiosError(error) && error.response?.data?.message) ||
+        (error instanceof Error && error.message) ||
+        'An error occurred'
+      );
     }
-    return error instanceof Error ? error.message : 'Unexpected error';
+    return (error instanceof Error && error.message) || 'Unexpected error';
   };
 
   const login = useCallback(async (payload: LoginPayload) => {

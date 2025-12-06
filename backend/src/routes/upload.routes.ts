@@ -30,11 +30,70 @@ const upload = multer({
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
 });
- 
+
+const uploadMultiple = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024, files: 10 },
+});
+
+// Error handling middleware for multer
+const handleMulterError = (err: any, req: any, res: any, next: any) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        message: 'File validation failed',
+        errors: {
+          file: [`File size exceeds the maximum allowed size of 5MB. ${err.message}`],
+        },
+      });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({
+        message: 'File validation failed',
+        errors: {
+          files: [`Maximum 10 files allowed. ${err.message}`],
+        },
+      });
+    }
+    return res.status(400).json({
+      message: 'File upload error',
+      errors: {
+        file: [err.message],
+      },
+    });
+  }
+  if (err) {
+    return res.status(400).json({
+      message: 'File validation failed',
+      errors: {
+        file: [err.message || 'Unsupported file type. Allowed types: images (JPEG, PNG, GIF, WebP) and PDF.'],
+      },
+    });
+  }
+  next();
+};
+
 const router = Router();
 const controller = new UploadController();
 
-router.post('/', authenticate, authorize('admin', 'manager', 'user'), upload.single('file'), controller.upload);
+router.post(
+  '/',
+  authenticate,
+  authorize('admin', 'manager', 'user'),
+  upload.single('file'),
+  handleMulterError,
+  controller.upload,
+);
+
+router.post(
+  '/multiple',
+  authenticate,
+  authorize('admin', 'manager', 'user'),
+  uploadMultiple.array('files', 10),
+  handleMulterError,
+  controller.uploadMultiple,
+);
 
 export default router;
 
