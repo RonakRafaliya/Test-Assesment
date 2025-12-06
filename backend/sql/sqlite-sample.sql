@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS task (
 
 CREATE TABLE IF NOT EXISTS task_attachment (
   id TEXT PRIMARY KEY,
-  filename TEXT NOT NULL,
+  filename TEXT NOT NULL,Invalid credentials
   mimetype TEXT NOT NULL,
   path TEXT NOT NULL,
   taskId TEXT NOT NULL,
