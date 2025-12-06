@@ -28,3 +28,15 @@ export type TaskInput = {
   assigneeIds?: string[];
 };
 
+export type PaginationInfo = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
+export type PaginatedTasksResponse = {
+  tasks: Task[];
+  pagination: PaginationInfo;
+};
+

@@ -1,8 +1,10 @@
 import { apiClient } from './client';
-import { Task, TaskInput } from '../types/task';
+import { Task, TaskInput, PaginatedTasksResponse } from '../types/task';
 
-export const fetchTasks = async (): Promise<Task[]> => {
-  const { data } = await apiClient.get<Task[]>('/tasks');
+export const fetchTasks = async (page = 1, limit = 10): Promise<PaginatedTasksResponse> => {
+  const { data } = await apiClient.get<PaginatedTasksResponse>('/tasks', {
+    params: { page, limit },
+  });
   return data;
 };
 

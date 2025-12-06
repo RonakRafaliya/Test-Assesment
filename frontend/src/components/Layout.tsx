@@ -8,6 +8,8 @@ export const Layout = ({ children }: PropsWithChildren) => {
 
   const handleLogout = () => {
     logout();
+    localStorage.removeItem('task_filters_preferences');
+    localStorage.removeItem('remember_task_filters');
     navigate('/login');
   };
 

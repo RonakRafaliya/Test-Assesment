@@ -8,10 +8,29 @@ export class TaskController {
   private taskRepository = AppDataSource.getRepository(Task);
   private userRepository = AppDataSource.getRepository(User);
 
-  list = async (_req: Request, res: Response) => {
+  list = async (req: Request, res: Response) => {
     try {
-      const tasks = await this.taskRepository.find();
-      return res.json(tasks);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const offset = (page - 1) * limit;
+
+      const [tasks, total] = await this.taskRepository.findAndCount({
+        skip: offset,
+        take: limit,
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+
+      return res.json({
+        tasks,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
     } catch (error) {
       return res.status(500).json({ message: 'Failed to fetch tasks' });
     }
