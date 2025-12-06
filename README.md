@@ -2,6 +2,8 @@
 
 This repository provides a starter kit for a full-stack take-home exercise. The focus is on building out missing features and demonstrating end-to-end proficiency across React, Express, TypeORM, and PostgreSQL.
 
+_Note_: At the end of this README, I have added a **Finished Challenges & Details** section summarizing the challenges I completed and the bonus parts attempted. This is included for easier review.
+
 ## Features Included
 
 - JWT authentication with role-based access control (`admin`, `manager`, `user`)
@@ -185,3 +187,29 @@ After completing your challenges:
 - **Quality over quantity**: It's better to complete fewer challenges well than many challenges poorly. Focus on demonstrating your understanding of the stack and best practices.
 - **No AI Tools**: Please do not use AI tools like ChatGPT or Copilot for this assessment. We want to evaluate your own coding abilities and problem-solving skills.
 
+---
+
+## Finished Challenges & Details
+
+Below is a clear breakdown of the challenges I completed as part of this assessment:
+
+### ✔ Challenge 1 — Task Assignment UI
+- Completed the core challenge requirements.
+- Implemented user assignment UI and displayed assigned users on the task list.
+- Added filtering tasks by assignee on the frontend.
+- **Bonus attempted:** Search/filter users in assignee selector and user role display.
+
+---
+
+### ✔ Challenge 2 — Task Filtering, Search & Pagination
+- Completed the core features including search, status filtering, pagination and total counts.
+- Persisted filter states in URL parameters for a better user experience.
+- **Bonus attempted:** Sorting options and filter behavior enhancements.
+
+---
+
+### ✔ Challenge 5 — Input Validation & Error Handling
+- Completed core validation for backend and frontend.
+- Added user-friendly error messages and form-level validation.
+- Handled edge cases including invalid inputs and duplicate entries.
+- **Bonus:** Not attempted for this challenge.
